@@ -1,5 +1,7 @@
+//README:
+//This file is a stand-alone file with limited dependencies.
+//------------------------------------------
 const mongoose = require('mongoose');
-
 //------------------------------------------
 const Schema = mongoose.Schema;
 const binaryDataSchema = new Schema({

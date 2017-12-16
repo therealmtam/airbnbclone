@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>TEST OF PHOTO SERVICE</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body>
+    <div>
+      <section id="upload-data-panel">
+        <form id="upload-form" action="/uploadphoto" method="post" encType="multipart/form-data">
+          <fieldset>
+            <legend>Upload Photo</legend>
+            <div>
+              <input type="file" name="photo" accept="image/*" />
+            </div>
+            <div>
+              <input type="submit" value="Submit" />
+            </div>
+          </fieldset>
+        </form>
+      </section>
+
+      <button type="button" onClick={this.clearData.bind(this)}>Clear Database</button>
+    </div>
+  </body>
+</html>

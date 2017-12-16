@@ -1,3 +1,6 @@
+//README:
+//This file is a stand-alone file with limited dependencies.
+//------------------------------------------
 const mongoose = require('mongoose');
 const fs = require('fs');
 //------------------------------------------
@@ -12,7 +15,9 @@ let BinaryDataModel = mongoose.model('binarydata', binaryDataSchema);
 //------------------------------------------
 
 let counter = 0;
-const records = 100000;
+const records = 1000;
+
+let counter2 = 0; //TEMPORARILY USED TO DO LOAD TESTING
 
 function createModels () {
 
@@ -23,9 +28,10 @@ function createModels () {
 
     let model = new BinaryDataModel;
     model.binary_data = data;
-    model.photo_id = i; //eventually use Date.now()
+    model.photo_id = counter2; //eventually use Date.now() in real service usage
     model.photo_type = 'ext';
     models.push(model);
+    counter2++;
   }
 
   for (let i = 1; i <= 10; i++) {
@@ -33,9 +39,10 @@ function createModels () {
 
     let model = new BinaryDataModel;
     model.binary_data = data;
-    model.photo_id = i + 10; //eventually use Date.now()
+    model.photo_id = counter2; //eventually use Date.now() in real service usage
     model.photo_type = 'int';
     models.push(model);
+    counter2++;
   }
 
   return models;
