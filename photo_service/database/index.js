@@ -27,6 +27,7 @@ const create = (binary_data, photo_id, photo_type) => {
 		if (err) {
 			//error handle later
     }
+    console.log(result);
 	});
 };
 

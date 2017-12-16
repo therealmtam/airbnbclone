@@ -47,7 +47,7 @@ app.post('/uploadphoto', (request, response) => {
 
     const binary_data = fs.readFile(__dirname + `/../database/tmp/${photo_id}.jpg`, (err, data) => {
       //error handle later
-      db.create(binary_data, photo_id, photo_type);
+      db.create(data, photo_id, photo_type);
       fs.unlink(__dirname + `/../database/tmp/${photo_id}.jpg`, (err) => {
         //error handle later
       });
@@ -69,6 +69,7 @@ app.get('/photo/:id', (request, response) => {
     if (!result) {
       response.status(200).send('no photo');
     } else {
+      console.log(result);
       response.status(200).send(result[0].binary_data);
     }
   });
