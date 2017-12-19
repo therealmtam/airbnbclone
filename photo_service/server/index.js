@@ -1,3 +1,11 @@
+// //------------------------------------------
+// // Add this to the VERY top of the first file loaded in your app
+// const apm = require('elastic-apm').start({
+//   // Set required app name (allowed characters: a-z, A-Z, 0-9, -, _, and space)
+//   appName: 'photo_service'
+// });
+// //------------------------------------------
+
 //README:
 //This file contains all server functions.
 //------------------------------------------
@@ -69,17 +77,26 @@ app.get('/photo/:id', (request, response) => {
     if (!result) {
       response.status(200).send('no photo');
     } else {
-      console.log(result);
+      // console.log(result[0].binary_data);
       response.status(200).send(result[0].binary_data);
     }
   });
 
 });
 //------------------------------------------
+let counterTest = 0;
+app.get('/test', (request, response) => {
+  console.log('RUN ', counterTest++);
+  response.send('');
+});
+//------------------------------------------
 //SETUP CONNECTION TO SERVER:
 const port = 3000;
 const ip = '127.0.0.1';
 
-app.listen(port, ip, () => {
+app.listen(port, () => {
   console.log(`Connected to http://${ip}:${port}`);
 });
+
+//HOW TO DO A POST LOAD TEST ON AB:
+//POST: ab -c 1 -n 10 -p name.json -T application/json http://sdadasd
