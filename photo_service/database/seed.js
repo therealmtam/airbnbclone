@@ -6,7 +6,7 @@ const fs = require('fs');
 //------------------------------------------
 const Schema = mongoose.Schema;
 const binaryDataSchema = new Schema({
-  photo_id: Number,
+  photo_id: { type: Number, index: true },
   binary_data: Buffer,
   photo_type: String,
 });
@@ -15,9 +15,9 @@ let BinaryDataModel = mongoose.model('binarydata', binaryDataSchema);
 //------------------------------------------
 
 let counter = 0;
-const records = 1000;
+const records = 100000;
 
-let counter2 = 0; //TEMPORARILY USED TO DO LOAD TESTING
+let counter2 = 1; //TEMPORARILY USED TO DO LOAD TESTING
 
 function createModels () {
 
@@ -52,12 +52,13 @@ function endSeed (err) {
   if (err) {
     console.log(err);
   } else {
-    if (counter < records - 1) {
+    if (counter < records) {
       bulkInsert();
     } else {
       console.log('Counter ', counter);
       console.log('Time :', (Date.now() - beginTime) / 1000, 'seconds');
       mongoose.connection.close();
+
     }
   }
 };
