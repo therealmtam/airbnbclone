@@ -21,8 +21,8 @@ const app = express();
 //app.use(express.static(__dirname + '/../testClient'));
 //------------------------------------------
 app.get('/', (request, response) => {
-  console.log('Server1');
-  response.status(200).send('Hello');
+  console.log('Server3');
+  response.status(200).send('Hello3');
 });
 
 app.post('/uploadphoto', (request, response) => {
@@ -89,15 +89,15 @@ app.get('/photo/:id', (request, response) => {
 
 });
 //------------------------------------------
-let counter1 = 0;
+let counter3 = 0;
 app.get('/test', (request, response) => {
-  counter1++;
-  console.log('TEST1 ', counter1);
+  counter3++;
+  console.log('TEST3', counter3);
   response.send('');
 });
 //------------------------------------------
 //SETUP CONNECTION TO SERVER:
-const port = 3000;
+const port = 5000;
 const ip = '127.0.0.1';
 
 app.listen(port, () => {

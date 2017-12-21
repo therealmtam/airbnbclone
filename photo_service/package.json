@@ -8,7 +8,11 @@
     "startdb": "mongod --dbpath ./database/data",
     "seed": "node ./database/seed.js",
     "clear": "node ./database/clear.js",
-    "server": "nodemon ./server/index.js"
+    "server": "nodemon ./server/index.js",
+    "cluster": "nodemon ./server/cluster.js",
+    "server2": "nodemon ./server/index_server2.js",
+    "server3": "nodemon ./server/index_server3.js",
+    "server4": "nodemon ./server/index_server4.js"
   },
   "author": "",
   "license": "ISC",

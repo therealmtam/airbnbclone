@@ -1,0 +1,14 @@
+upstream project {
+  server localhost:3000;
+  server localhost:4000;
+  server localhost:5000;
+  server localhost:6000;
+}
+
+server {
+  listen 80;
+
+  location / {
+    proxy_pass http://project;
+  }
+}
