@@ -4,23 +4,23 @@
 const mongoose = require('mongoose');
 //------------------------------------------
 const Schema = mongoose.Schema;
-const binaryDataSchema = new Schema({
-  photo_id: Number,
-  binary_data: Buffer,
+const photoIndexSchema = new Schema({
+  photo_id: { type: Number, index: true },
+  file_loc: String,
   photo_type: String,
 });
 //------------------------------------------
-let BinaryDataModel = mongoose.model('binarydata', binaryDataSchema);
+let PhotoIndexModel = mongoose.model('photo', photoIndexSchema);
 //------------------------------------------
 mongoose.connect('mongodb://localhost/photoservice');
 //------------------------------------------
 //CRUD FUNCTIONS:
 
-const create = (binary_data, photo_id, photo_type) => {
+const create = (file_loc, photo_id, photo_type) => {
 
-  let model = new BinaryDataModel;
-  model.binary_data = binary_data;
+  let model = new PhotoIndexModel;
   model.photo_id = photo_id;
+  model.file_loc = file_loc;
   model.photo_type = photo_type;
 
   model.save((err, result) => {
@@ -32,7 +32,7 @@ const create = (binary_data, photo_id, photo_type) => {
 };
 
 const read = (id, callback) => {
-  BinaryDataModel.find({ photo_id: id }).exec().then(result => {
+  PhotoIndexModel.find({ photo_id: id }).exec().then(result => {
     callback(result);
   });
 };

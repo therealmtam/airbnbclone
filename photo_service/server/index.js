@@ -24,20 +24,19 @@ app.get('/', (request, response) => {
   console.log('Server1');
   response.status(200).send('Hello');
 });
-
+//------------------------------------------
 app.post('/uploadphoto', (request, response) => {
   const photo_id = Date.now();
 
   const storage = multer.diskStorage({
-    destination: __dirname + '/../database/tmp/',
+    destination: __dirname + '/../photos/',
     filename: function (request, file, cb) {
       cb(null, photo_id + path.extname(file.originalname));
     }
   });
 
-  //Store the uploaded photo file onto the Server =>
-  //Read the binary data from the file & Respond to the Post =>
-  //Save the binary data to the database & Remove the file from the Server
+  //Store the uploaded photo file onto the Photos folder on the Server =>
+  //Respond to the Post =>
   (multer({
     storage: storage,
   }).single('photo'))(request, response, (err) => {
@@ -47,7 +46,6 @@ app.post('/uploadphoto', (request, response) => {
 
     const generateRandPhotoType = () => {
       const types = ['int', 'ext'];
-
       function getRandomIntInclusive(min, max) {
         min = Math.ceil(min);
         max = Math.floor(max);
@@ -58,13 +56,10 @@ app.post('/uploadphoto', (request, response) => {
 
     const photo_type = generateRandPhotoType();
 
-    const binary_data = fs.readFile(__dirname + `/../database/tmp/${photo_id}.jpg`, (err, data) => {
-      //error handle later
-      db.create(data, photo_id, photo_type);
-      fs.unlink(__dirname + `/../database/tmp/${photo_id}.jpg`, (err) => {
-        //error handle later
-      });
-    });
+    const file_loc = `${__dirname}/../photos/${photo_id}.jpg`;
+
+    db.create(file_loc, photo_id, photo_type);  //don't wait for this async op
+    //write to the cache as well;
 
     const newPhotoInfo = {
       url: `http://localhost:3000/photo/${photo_id}`,
@@ -78,12 +73,20 @@ app.post('/uploadphoto', (request, response) => {
 //------------------------------------------
 app.get('/photo/:id', (request, response) => {
 
+  //read from the cache if it is in the cache. Else, read from the db.
+
   db.read(request.params.id, (result) => {
     if (!result) {
       response.status(200).send('no photo');
     } else {
-      // console.log(result[0].binary_data);
-      response.status(200).send(result[0].binary_data);
+      //Write the key and value to the cache
+
+      fs.readFile(result[0].file_loc, (err, binary_data) => {
+        if (err) {
+          console.log(err);
+        }
+        response.status(200).send(binary_data);
+      });
     }
   });
 
