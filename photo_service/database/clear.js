@@ -4,22 +4,22 @@
 const mongoose = require('mongoose');
 //------------------------------------------
 const Schema = mongoose.Schema;
-const binaryDataSchema = new Schema({
-  photo_id: Number,
-  binary_data: Buffer,
+const photoIndexSchema = new Schema({
+  photo_id: { type: Number, index: true },
+  file_loc: String,
   photo_type: String,
 });
 //------------------------------------------
-let BinaryDataModel = mongoose.model('binarydata', binaryDataSchema);
+let PhotoIndexModel = mongoose.model('photo', photoIndexSchema);
 
 const DeleteAll = function () {
 
   mongoose.connect('mongodb://localhost/photoservice', () => {
-    BinaryDataModel.remove({}).exec().then(result => {
-      console.log('removed BinaryDataModel ', result.result);
+    PhotoIndexModel.remove({}).exec().then(result => {
+      console.log('Removed PhotoIndexModel ', result.result);
     }).then(mongoose.connection.close());
   });
 
 };
-
+//------------------------------------------
 DeleteAll();

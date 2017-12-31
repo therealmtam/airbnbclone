@@ -45,6 +45,7 @@ function createModels () {
 
   return models;
 };
+//------------------------------------------
 
 function endSeed (err) {
   if (err) {
@@ -57,10 +58,11 @@ function endSeed (err) {
       console.log('Time :', (Date.now() - beginTime) / 1000, 'seconds');
       mongoose.connection.close();
 
-
+      seedCache();
     }
   }
 };
+//------------------------------------------
 
 let start = false;
 let beginTime;
@@ -80,7 +82,7 @@ function bulkInsert() {
     bulk.insert(models[i]);
     counter++;
     console.log('inserting #: ', counter);
-    cacheText = cacheText + `SET "${models[i].photo_id}" "${models[i].file_loc}"\r\n`;
+    cacheText = cacheText + `["SET", "${models[i].photo_id}", "${models[i].file_loc}"],`;
   }
 
   fs.appendFile(__dirname + `/../cache/seedCache.txt`, cacheText, (err) => {
@@ -91,21 +93,36 @@ function bulkInsert() {
 
   bulk.execute(endSeed);
 };
+//------------------------------------------
 
 function seedCache () {
   let client = redis.createClient();
 
   client.on('connect', () => {
-    console.log('Connected to Redis... and SEEDING CACHE');
+    console.log('CONNECTED TO REDIS FOR SEEDING CACHE ');
+
+    let cmds = fs.readFileSync(__dirname + `/../cache/seedCache.txt`, 'utf8');
+    let batchCmds = JSON.parse(`[${cmds.slice(0, cmds.length-1)}]`);
+
+    client.batch(batchCmds).exec((err, result) => {
+      if (err) {
+        console.log(err);
+      }
+      client.quit((err, result) => {
+        console.log('QUIT REDIS ');
+      });
+    });
+
   });
 
 };
 
+//------------------------------------------
 
 const Seed = function () {
   mongoose.connect('mongodb://localhost/photoservice', bulkInsert);
 };
-
+//------------------------------------------
 Seed(); //Begins the Seeding Process
 
 //------------------------------------------
