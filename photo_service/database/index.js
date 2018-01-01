@@ -32,7 +32,10 @@ const create = (file_loc, photo_id, photo_type) => {
 };
 
 const read = (id, callback) => {
-  PhotoIndexModel.find({ photo_id: id }).exec().then(result => {
+  PhotoIndexModel.find({ photo_id: id }).exec().then((err, result) => {
+    if (err) {
+      console.log(err);
+    }
     callback(result);
   });
 };

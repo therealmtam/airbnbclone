@@ -7,7 +7,7 @@ const fs = require('fs');
 
 const ClearCache = function () {
 
-  let client = redis.createClient();
+  const client = redis.createClient();
 
   client.once('ready', () => {
     client.flushall((err, result) => {

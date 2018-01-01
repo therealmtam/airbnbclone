@@ -96,7 +96,7 @@ function bulkInsert() {
 //------------------------------------------
 
 function seedCache () {
-  let client = redis.createClient();
+  const client = redis.createClient();
 
   client.on('connect', () => {
     console.log('CONNECTED TO REDIS FOR SEEDING CACHE ');

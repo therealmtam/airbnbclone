@@ -11,6 +11,7 @@
 //------------------------------------------
 const express = require('express');
 const db = require('../database');
+const cache = require('../cache');
 
 const multer = require('multer');
 const path = require('path');
@@ -18,12 +19,12 @@ const fs = require('fs');
 //------------------------------------------
 const app = express();
 //------------------------------------------
-//app.use(express.static(__dirname + '/../testClient'));
+app.use(express.static(__dirname + '/../testClient'));
 //------------------------------------------
-app.get('/', (request, response) => {
-  console.log('Server1');
-  response.status(200).send('Hello');
-});
+// app.get('/', (request, response) => {
+//   console.log('Server1');
+//   response.status(200).send('Hello1');
+// });
 //------------------------------------------
 app.post('/uploadphoto', (request, response) => {
   const photo_id = Date.now();
@@ -59,7 +60,7 @@ app.post('/uploadphoto', (request, response) => {
     const file_loc = `${__dirname}/../photos/${photo_id}.jpg`;
 
     db.create(file_loc, photo_id, photo_type);  //don't wait for this async op
-    //write to the cache as well;
+    cache.create(photo_id, file_loc); //don't wait for this async op
 
     const newPhotoInfo = {
       url: `http://localhost:3000/photo/${photo_id}`,
@@ -73,15 +74,23 @@ app.post('/uploadphoto', (request, response) => {
 //------------------------------------------
 app.get('/photo/:id', (request, response) => {
 
-  //read from the cache if it is in the cache. Else, read from the db.
-
-  db.read(request.params.id, (result) => {
+  cache.read(request.params.id, (result) => {
     if (!result) {
-      response.status(200).send('no photo');
+      db.read(request.params.id, (result) => {
+        if (!result) {
+          response.status(200).send('no photo');
+        } else {
+          cache.create(result[0].photo_id, result[0].file_loc);
+          fs.readFile(result[0].file_loc, (err, binary_data) => {
+            if (err) {
+              console.log(err);
+            }
+            response.status(200).send(binary_data);
+          });
+        }
+      });
     } else {
-      //Write the key and value to the cache
-
-      fs.readFile(result[0].file_loc, (err, binary_data) => {
+      fs.readFile(result, (err, binary_data) => {
         if (err) {
           console.log(err);
         }
