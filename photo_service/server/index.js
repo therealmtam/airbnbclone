@@ -17,14 +17,17 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 //------------------------------------------
+//Change this value. Defined when instance is created on AWS
+const AWSinstanceNum = 1;
+//------------------------------------------
 const app = express();
 //------------------------------------------
-app.use(express.static(__dirname + '/../testClient'));
+//app.use(express.static(__dirname + '/../testClient'));
 //------------------------------------------
-// app.get('/', (request, response) => {
-//   console.log('Server1');
-//   response.status(200).send('Hello1');
-// });
+app.get('/', (request, response) => {
+  console.log(`Server${AWSinstanceNum}`);
+  response.status(200).send(`Instance${AWSinstanceNum}`);
+});
 //------------------------------------------
 app.post('/uploadphoto', (request, response) => {
   const photo_id = Date.now();
@@ -104,12 +107,12 @@ app.get('/photo/:id', (request, response) => {
 let counter1 = 0;
 app.get('/test', (request, response) => {
   counter1++;
-  console.log('TEST1 ', counter1);
+  console.log(`TEST INSTANCE${AWSinstanceNum} `, counter1);
   response.send('');
 });
 //------------------------------------------
 //SETUP CONNECTION TO SERVER:
-const port = 3000;
+const port = 80;
 const ip = '127.0.0.1';
 
 app.listen(port, () => {
