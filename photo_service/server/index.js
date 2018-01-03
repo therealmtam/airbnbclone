@@ -111,6 +111,12 @@ app.get('/test', (request, response) => {
   response.send('');
 });
 //------------------------------------------
+app.get('/loaderio-90092a896689384c7186faed5b1df947', (request$
+  let loader = fs.readFileSync(__dirname + '/../loadTest/loade$
+  console.log('LOADER ', loader);
+response.status(200).send(loader);
+});
+//------------------------------------------
 //SETUP CONNECTION TO SERVER:
 const port = 80;
 const ip = '127.0.0.1';
