@@ -111,10 +111,10 @@ app.get('/test', (request, response) => {
   response.send('');
 });
 //------------------------------------------
-app.get('/loaderio-90092a896689384c7186faed5b1df947', (request$
-  let loader = fs.readFileSync(__dirname + '/../loadTest/loade$
+app.get('/loaderio-90092a896689384c7186faed5b1df947', (request, response) => {
+  let loader = fs.readFileSync(__dirname + '/../loadTest/loaderio', 'utf8');
   console.log('LOADER ', loader);
-response.status(200).send(loader);
+  response.status(200).send(loader);
 });
 //------------------------------------------
 //SETUP CONNECTION TO SERVER:
