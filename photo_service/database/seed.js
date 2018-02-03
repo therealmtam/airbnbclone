@@ -17,7 +17,7 @@ const fs = require('fs');
 //------------------------------------------
 
 let counter = 0;
-const records = 100000;
+const records = 20;
 
 let counter2 = 1; //TEMPORARILY USED TO DO LOAD TESTING
 

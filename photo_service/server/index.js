@@ -25,9 +25,11 @@ const app = express();
 //app.use(express.static(__dirname + '/../testClient'));
 //------------------------------------------
 app.get('/', (request, response) => {
-  console.log(`Server${AWSinstanceNum}`);
-  response.status(200).send(`Instance${AWSinstanceNum}`);
+  response.sendFile(path.join(__dirname + '/../testClient/index.html'));
 });
+//------------------------------------------
+
+let newUrl = '';
 //------------------------------------------
 app.post('/uploadphoto', (request, response) => {
   const photo_id = Date.now();
@@ -66,11 +68,21 @@ app.post('/uploadphoto', (request, response) => {
     cache.create(photo_id, file_loc); //don't wait for this async op
 
     const newPhotoInfo = {
-      url: `http://localhost:3000/photo/${photo_id}`,
+      url: `http://${ip}:${port}/photo/${photo_id}`,
       photoType: photo_type
     };
 
-    response.send(JSON.stringify(newPhotoInfo));
+    newUrl = newPhotoInfo.url;
+
+    // Set a timer to delete newly uploaded photos from the file system:
+    setTimeout(() => {
+      fs.unlink(file_loc, () => {
+        console.log('removed file from system');
+      });
+      newUrl = '';
+    }, 15000);
+
+    response.redirect('/');
   });
 
 });
@@ -117,8 +129,12 @@ app.get(`/${loaderCode}`, (request, response) => {
   response.status(200).send(loaderCode);
 });
 //------------------------------------------
+app.get('/newurl', (request, response) => {
+  response.send(newUrl);
+});
+//------------------------------------------
 //SETUP CONNECTION TO SERVER:
-const port = 80;
+const port = 3000;
 const ip = '127.0.0.1';
 
 app.listen(port, () => {

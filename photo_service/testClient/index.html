@@ -4,6 +4,27 @@
     <title>TEST OF PHOTO SERVICE</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <style>
+      .vertical-menu {
+        width: 200px;
+        height: 150px;
+        overflow-y: auto;
+      }
+
+      .vertical-menu a {
+        background-color: #eee;
+        color: black;
+        display: block;
+        padding: 12px;
+        text-decoration: none;
+      }
+
+      .vertical-menu a:hover {
+        background-color: #ccc;
+      }
+
+    </style>
   </head>
   <body>
     <div>
@@ -12,14 +33,75 @@
           <fieldset>
             <legend>Upload Photo</legend>
             <div>
-              <input type="file" name="photo" accept="image/*" />
+              <input type="file" name="photo" accept="image/*"
+                onchange="allowUpload()"/>
             </div>
             <div>
-              <input type="submit" value="Submit" />
+              <input id="upload-input" type="submit" value="Upload"
+                style="font-size: 20px; display: none"/>
             </div>
           </fieldset>
         </form>
       </section>
+      <section id="getphoto-section" style="margin-top: 30px; display: none">
+        <fieldset>
+          <legend>Download Your Uploaded Photo:</legend>
+            <form id="getphoto-form" action="/" method="get" >
+              <input id="getphoto-input" type="text" value="" style="width: 250px">
+              <br>
+              <input type="submit" value="Download" style="font-size: 20px">
+            </form>
+        </fieldset>
+      </section>
+      <section id="getphoto-section" style="margin-top: 30px; display: block">
+        <fieldset>
+          <legend>Download Previously Uploaded Photos:</legend>
+          <p style="font-size: 20px">Note: Photos are deleted from the database every 15 seconds after upload.</p>
+          <div class="vertical-menu">
+            <a href="http://127.0.0.1:3000/photo/20">default stock img 20</a>
+            <a href="http://127.0.0.1:3000/photo/19">default stock img 19</a>
+            <a href="http://127.0.0.1:3000/photo/18">default stock img 18</a>
+            <a href="http://127.0.0.1:3000/photo/17">default stock img 17</a>
+            <a href="http://127.0.0.1:3000/photo/16">default stock img 16</a>
+            <a href="http://127.0.0.1:3000/photo/15">default stock img 15</a>
+            <a href="http://127.0.0.1:3000/photo/14">default stock img 14</a>
+            <a href="http://127.0.0.1:3000/photo/13">default stock img 13</a>
+            <a href="http://127.0.0.1:3000/photo/12">default stock img 12</a>
+            <a href="http://127.0.0.1:3000/photo/11">default stock img 11</a>
+            <a href="http://127.0.0.1:3000/photo/10">default stock img 10</a>
+            <a href="http://127.0.0.1:3000/photo/9">default stock img 9</a>
+            <a href="http://127.0.0.1:3000/photo/8">default stock img 8</a>
+            <a href="http://127.0.0.1:3000/photo/7">default stock img 7</a>
+            <a href="http://127.0.0.1:3000/photo/6">default stock img 6</a>
+            <a href="http://127.0.0.1:3000/photo/5">default stock img 5</a>
+            <a href="http://127.0.0.1:3000/photo/4">default stock img 4</a>
+            <a href="http://127.0.0.1:3000/photo/3">default stock img 3</a>
+            <a href="http://127.0.0.1:3000/photo/2">default stock img 2</a>
+            <a href="http://127.0.0.1:3000/photo/1">default stock img 1</a>
+          </div>
+        </fieldset>
+      </section>
     </div>
+
+    <script>
+
+      function allowUpload() {
+        $('#upload-input').attr("style", "font-size: 20px; display: block");
+      }
+
+      $.get('/newurl', (latestUploadUrl) => {
+        if (latestUploadUrl.length === 0) {
+          // $('#getphoto-section').attr("style", "margin-top: 30px; display: none");
+        } else {
+          let splitUrl = latestUploadUrl.split('/');
+          let endpoint = `/${splitUrl[splitUrl.length - 2]}/${splitUrl[splitUrl.length - 1]}`;
+          // $('#getphoto-form').attr("action", endpoint);
+          // $('#getphoto-input').attr("value", latestUploadUrl);
+          // $('#getphoto-section').attr("style", "margin-top: 30px; display: block");
+          $('.vertical-menu').prepend(`<a href=${latestUploadUrl}>${splitUrl[splitUrl.length - 1]}</a>`)
+        }
+      });
+
+    </script>
   </body>
 </html>
