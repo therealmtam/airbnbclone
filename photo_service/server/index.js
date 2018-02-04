@@ -134,8 +134,8 @@ app.get('/newurl', (request, response) => {
 });
 //------------------------------------------
 //SETUP CONNECTION TO SERVER:
-const port = 3000;
-const ip = '127.0.0.1';
+const port = 80;
+const ip = 'ec2-54-193-57-77.us-west-1.compute.amazonaws.com';
 
 app.listen(port, () => {
   console.log(`Connected to http://${ip}:${port}`);

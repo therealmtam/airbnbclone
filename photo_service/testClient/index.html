@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>TEST OF PHOTO SERVICE</title>
+    <title>Image Hosting Microservice</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <style>
       .vertical-menu {
-        width: 200px;
-        height: 150px;
+        width: 300px;
+        height: 300px;
         overflow-y: auto;
       }
 
@@ -84,6 +84,13 @@
     </div>
 
     <script>
+
+      const AWSsite = 'https://ec2-54-193-57-77.us-west-1.compute.amazonaws.com';
+
+      $('.vertical-menu').children().each((index, el) => {
+        $(el).attr('href', `${AWSsite}/photo/${20-index}`);
+        console.log(el, index);
+      });
 
       function allowUpload() {
         $('#upload-input').attr("style", "font-size: 20px; display: block");
