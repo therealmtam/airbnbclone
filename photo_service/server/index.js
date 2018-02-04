@@ -29,7 +29,7 @@ app.get('/', (request, response) => {
 });
 //------------------------------------------
 
-let newUrl = '';
+let newUrl = [];
 //------------------------------------------
 app.post('/uploadphoto', (request, response) => {
   const photo_id = Date.now();
@@ -72,45 +72,63 @@ app.post('/uploadphoto', (request, response) => {
       photoType: photo_type
     };
 
-    newUrl = newPhotoInfo.url;
+    // Add new url to queue
+    newUrl.push(newPhotoInfo.url);
 
     // Set a timer to delete newly uploaded photos from the file system:
     setTimeout(() => {
-      fs.unlink(file_loc, () => {
-        console.log('removed file from system');
-      });
-      newUrl = '';
-    }, 15000);
+      if (fs.existsSync(file_loc)) {
+        fs.unlinkSync(file_loc);
+      }
+      cache.destroy(photo_id, () => { db.destroy(photo_id, () => { console.log('removed from db') }) });
+      newUrl.shift();
+    }, 20000);
 
     response.redirect('/');
   });
 
 });
 //------------------------------------------
+
+let sendErrorMsg = '';
+let noFileUploadError = '';
+
 app.get('/photo/:id', (request, response) => {
 
   cache.read(request.params.id, (result) => {
     if (!result) {
       db.read(request.params.id, (result) => {
         if (!result) {
-          response.status(200).send('no photo');
+          sendErrorMsg = request.params.id;
+          response.redirect('/');
         } else {
           cache.create(result[0].photo_id, result[0].file_loc);
-          fs.readFile(result[0].file_loc, (err, binary_data) => {
-            if (err) {
-              console.log(err);
-            }
-            response.status(200).send(binary_data);
-          });
+
+          if (fs.existsSync(result[0].file_loc)) {
+            fs.readFile(result[0].file_loc, (err, binary_data) => {
+              if (err) {
+                console.log(err);
+              }
+              response.status(200).send(binary_data);
+            });
+          } else {
+            noFileUploadError = request.params.id;
+            response.redirect('/');
+          }
         }
       });
     } else {
-      fs.readFile(result, (err, binary_data) => {
-        if (err) {
-          console.log(err);
-        }
-        response.status(200).send(binary_data);
-      });
+      if (fs.existsSync(result)) {
+        fs.readFile(result, (err, binary_data) => {
+          if (err) {
+            console.log(err);
+          }
+          response.status(200).send(binary_data);
+        });
+      } else {
+        noFileUploadError = request.params.id;
+        response.redirect('/');
+      }
     }
   });
 
@@ -130,12 +148,18 @@ app.get(`/${loaderCode}`, (request, response) => {
 });
 //------------------------------------------
 app.get('/newurl', (request, response) => {
-  response.send(newUrl);
+  const error1 = sendErrorMsg;
+  sendErrorMsg = '';
+  const error2 = noFileUploadError;
+  noFileUploadError = '';
+  response.send(JSON.stringify({ newUrl: newUrl, error1: error1, error2: error2 }));
 });
 //------------------------------------------
 //SETUP CONNECTION TO SERVER:
 const port = 80;
-const ip = 'ec2-54-193-57-77.us-west-1.compute.amazonaws.com';
+const ip = 'ec2-54-241-149-218.us-west-1.compute.amazonaws.com';
+// const port = 3000;
+// const ip = 'localhost';
 
 app.listen(port, () => {
   console.log(`Connected to http://${ip}:${port}`);

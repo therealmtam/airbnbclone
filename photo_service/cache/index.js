@@ -28,9 +28,19 @@ const read = (id, callback) => {
   });
 };
 
+const destroy = (id, callback) => {
+  client.del(id, (err, result) => {
+    if(err) {
+      console.log(err);
+    }
+    callback(result);
+  });
+};
+
 module.exports = {
-  create: create,
-  read: read,
+  create,
+  read,
+  destroy,
 }
 
 

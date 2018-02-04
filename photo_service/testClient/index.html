@@ -56,7 +56,8 @@
       <section id="getphoto-section" style="margin-top: 30px; display: block">
         <fieldset>
           <legend>Download Previously Uploaded Photos:</legend>
-          <p style="font-size: 20px">Note: Photos are deleted from the database every 15 seconds after upload.</p>
+          <p style="font-size: 20px">Note: Photos are deleted from the database every 20 seconds after upload.</p>
+          <p id="error-msg" style="font-size: 15px; font-style: italic"></p>
           <div class="vertical-menu">
             <a href="http://127.0.0.1:3000/photo/20">default stock img 20</a>
             <a href="http://127.0.0.1:3000/photo/19">default stock img 19</a>
@@ -85,27 +86,43 @@
 
     <script>
 
-      const AWSsite = 'https://ec2-54-193-57-77.us-west-1.compute.amazonaws.com';
+      const AWSsite = 'http://ec2-54-241-149-218.us-west-1.compute.amazonaws.com';
+      // const AWSsite = 'http://localhost:3000';
 
       $('.vertical-menu').children().each((index, el) => {
         $(el).attr('href', `${AWSsite}/photo/${20-index}`);
-        console.log(el, index);
       });
 
       function allowUpload() {
         $('#upload-input').attr("style", "font-size: 20px; display: block");
       }
 
-      $.get('/newurl', (latestUploadUrl) => {
-        if (latestUploadUrl.length === 0) {
+      $.get('/newurl', (obj) => {
+
+        const incomingObj = JSON.parse(obj);
+        const error1 = incomingObj.error1;
+        const error2 = incomingObj.error2;
+        const latestUploadUrls = incomingObj.newUrl;
+
+        if (latestUploadUrls.length === 0) {
           // $('#getphoto-section').attr("style", "margin-top: 30px; display: none");
         } else {
-          let splitUrl = latestUploadUrl.split('/');
-          let endpoint = `/${splitUrl[splitUrl.length - 2]}/${splitUrl[splitUrl.length - 1]}`;
-          // $('#getphoto-form').attr("action", endpoint);
-          // $('#getphoto-input').attr("value", latestUploadUrl);
-          // $('#getphoto-section').attr("style", "margin-top: 30px; display: block");
-          $('.vertical-menu').prepend(`<a href=${latestUploadUrl}>${splitUrl[splitUrl.length - 1]}</a>`)
+          latestUploadUrls.forEach((url) => {
+            let splitUrl = url.split('/');
+            let endpoint = `/${splitUrl[splitUrl.length - 2]}/${splitUrl[splitUrl.length - 1]}`;
+            $('.vertical-menu').prepend(`<a href=${url}>${splitUrl[splitUrl.length - 1]}</a>`)
+            // $('#getphoto-form').attr("action", endpoint);
+            // $('#getphoto-input').attr("value", latestUploadUrl);
+            // $('#getphoto-section').attr("style", "margin-top: 30px; display: block");
+          });
+        }
+
+        if (error1.length > 0) {
+          $('#error-msg').text(`Sorry, photo ${error1} is no longer in the database`);
+        }
+
+        if (error2.length > 0) {
+          $('#error-msg').text(`Photo ${error2} was not properly uploaded. Please try again.`);
         }
       });
 

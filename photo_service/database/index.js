@@ -40,9 +40,17 @@ const read = (id, callback) => {
   });
 };
 
+const destroy = (id, callback) => {
+  PhotoIndexModel.remove({ photo_id: id }).exec().then((result) => {
+    console.log('Removed Photo from DB ', result.result);
+    callback();
+  });
+};
+
 module.exports = {
-  read: read,
-  create: create
+  read,
+  create,
+  destroy,
 }
 
 
